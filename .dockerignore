@@ -1,0 +1,25 @@
+# Visual Studio / .NET
+bin/
+obj/
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+.vscode/
+
+# Git
+.git
+.gitignore
+
+# OS / misc
+.DS_Store
+Thumbs.db
+*.log
+
+# node / frontend (if present)
+node_modules/
+
+# optionally exclude large local files you don't want in build context
+*.zip
+*.tar
