@@ -5,7 +5,8 @@
 // (since exported history is historical - "last 6 months" from today would
 // usually show nothing) -> user can then narrow down via presets/slider/custom range.
 
-const uploadScreen = document.getElementById("uploadScreen");
+// `upload` is the ID used in the HTML; fall back to a sensible selector if it's missing.
+const uploadScreen = document.getElementById("upload") || document.querySelector(".upload-screen") || null;
 const dashboard = document.getElementById("dashboard");
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -50,36 +51,56 @@ async function uploadFiles(fileList) {
   setUploadStatus(`Uploading ${jsonFiles.length} file(s)...`);
 
   try {
-    const response = await fetch("/api/upload", { method: "POST", body: formData });
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+      credentials: "same-origin",
+      headers: {
+        Accept: "application/json"
+      }
+    });
 
     if (!response.ok) {
-      const errorText = await response.text();
+      let errorText;
+      try {
+        errorText = await response.text();
+      } catch (e) {
+        errorText = response.statusText || `Upload failed with status ${response.status}`;
+      }
+      console.error("Upload failed:", response.status, errorText);
       setUploadStatus(errorText || "Upload failed.", "error");
       return;
     }
 
     const result = await response.json();
+    // Support both camelCase (client expectation) and PascalCase (server default) responses.
+    const filesProcessed = result.filesProcessed ?? result.FilesProcessed ?? 0;
+    const trackEventsLoaded = result.trackEventsLoaded ?? result.TrackEventsLoaded ?? result.TrackEventsLoaded ?? 0;
+
     setUploadStatus(
-      `Loaded ${result.trackEventsLoaded.toLocaleString()} track plays from ${result.filesProcessed} file(s). Building your dashboard...`,
+      `Loaded ${trackEventsLoaded.toLocaleString()} track plays from ${filesProcessed} file(s). Building your dashboard...`,
       "success"
     );
 
     await enterDashboard();
   } catch (err) {
-    console.error(err);
-    setUploadStatus("Something went wrong while uploading. Check the console for details.", "error");
+    console.error("Upload request failed:", err);
+    setUploadStatus(err?.message ?? "Something went wrong while uploading. Check the console for details.", "error");
   }
 }
 
 function showDashboard() {
-  uploadScreen.classList.add("hidden");
-  dashboard.classList.remove("hidden");
+  if (uploadScreen) uploadScreen.classList.add("hidden");
+  if (dashboard) {
+    dashboard.classList.remove("hidden");
+    dashboard.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 }
 
 function showUploadScreen() {
-  dashboard.classList.add("hidden");
-  uploadScreen.classList.remove("hidden");
-  setUploadStatus("");
+  if (dashboard) dashboard.classList.add("hidden");
+  if (uploadScreen) uploadScreen.classList.remove("hidden");
+  if (uploadStatus) setUploadStatus("");
 }
 
 dropzone.addEventListener("click", () => fileInput.click());
@@ -91,6 +112,7 @@ fileInput.addEventListener("change", () => {
 ["dragenter", "dragover"].forEach(evt =>
   dropzone.addEventListener(evt, e => {
     e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = "copy";
     dropzone.classList.add("dragover");
   })
 );
@@ -107,6 +129,10 @@ dropzone.addEventListener("drop", e => {
     uploadFiles(e.dataTransfer.files);
   }
 });
+
+// Prevent the browser from navigating to the file when dropping outside the dropzone.
+window.addEventListener("dragover", e => e.preventDefault());
+window.addEventListener("drop", e => e.preventDefault());
 
 uploadDifferentBtn.addEventListener("click", async () => {
   await fetch("/api/upload/clear", { method: "POST" });
@@ -240,8 +266,19 @@ function upsertChart(canvasId, config) {
   }
 }
 
-const axisColor = "#b3b3b3";
-const gridColor = "#2a2a2a";
+const axisColor = "#a3a3ad";
+const gridColor = "#2c2c33";
+
+// Accent palette mirrors css/site.css tokens (--purple, --pink, --teal, --blue, --amber, --green).
+const PALETTE = {
+  green: "#1db954",
+  purple: "#b18cff",
+  pink: "#ff6fb0",
+  teal: "#33d6c0",
+  blue: "#6ea8fe",
+  amber: "#ffc857"
+};
+const DOUGHNUT_COLORS = [PALETTE.purple, PALETTE.pink, PALETTE.teal, PALETTE.blue, PALETTE.amber, PALETTE.green, "#535353"];
 
 async function loadSummary() {
   const summary = await getJson(`/api/stats/summary?${buildRangeQuery()}`);
@@ -251,6 +288,15 @@ async function loadSummary() {
   document.getElementById("statUniqueTracks").textContent = summary.uniqueTracks.toLocaleString();
 
   activeRangeLabel.textContent = `Showing ${formatDate(new Date(summary.rangeStartUtc))} - ${formatDate(new Date(summary.rangeEndUtc))}`;
+
+  // Derived stat: average minutes listened per calendar day in the active range.
+  const rangeStart = new Date(summary.rangeStartUtc);
+  const rangeEnd = new Date(summary.rangeEndUtc);
+  const dayCount = Math.max(1, Math.round((rangeEnd - rangeStart) / (1000 * 60 * 60 * 24)) + 1);
+  const avgPerDay = summary.totalMinutesListened / dayCount;
+  document.getElementById("statAvgPerDay").textContent = avgPerDay >= 1
+    ? Math.round(avgPerDay).toLocaleString()
+    : avgPerDay.toFixed(1);
 }
 
 async function loadHabits() {
@@ -273,7 +319,7 @@ async function loadTopArtists() {
     type: "bar",
     data: {
       labels: artists.map(a => a.artistName),
-      datasets: [{ label: "Minutes listened", data: artists.map(a => a.minutesListened), backgroundColor: "#1db954", borderRadius: 6 }]
+      datasets: [{ label: "Minutes listened", data: artists.map(a => a.minutesListened), backgroundColor: PALETTE.pink, borderRadius: 6 }]
     },
     options: {
       indexAxis: "y",
@@ -294,7 +340,7 @@ async function loadTrend() {
       labels: trend.map(t => t.month),
       datasets: [{
         label: "Minutes listened", data: trend.map(t => t.minutesListened),
-        borderColor: "#1db954", backgroundColor: "rgba(29, 185, 84, 0.2)", fill: true, tension: 0.3
+        borderColor: PALETTE.purple, backgroundColor: "rgba(177, 140, 255, 0.18)", fill: true, tension: 0.3
       }]
     },
     options: {
@@ -313,7 +359,7 @@ async function loadDayOfWeek() {
     type: "bar",
     data: {
       labels: days.map(d => DAY_LABELS[d.dayIndex]),
-      datasets: [{ label: "Minutes listened", data: days.map(d => d.minutesListened), backgroundColor: "#1ed760", borderRadius: 6 }]
+      datasets: [{ label: "Minutes listened", data: days.map(d => d.minutesListened), backgroundColor: PALETTE.teal, borderRadius: 6 }]
     },
     options: {
       plugins: { legend: { display: false } },
@@ -327,11 +373,21 @@ async function loadDayOfWeek() {
 
 async function loadHourOfDay() {
   const hours = await getJson(`/api/stats/by-hour?${buildRangeQuery()}`);
+
+  // Derived stat: the single hour (UTC) with the most listening.
+  const peakHourEl = document.getElementById("statPeakHour");
+  if (hours.length > 0) {
+    const peak = hours.reduce((best, h) => (h.minutesListened > best.minutesListened ? h : best), hours[0]);
+    peakHourEl.textContent = `${String(peak.hour).padStart(2, "0")}:00`;
+  } else {
+    peakHourEl.textContent = "-";
+  }
+
   upsertChart("hourOfDayChart", {
     type: "bar",
     data: {
       labels: hours.map(h => `${h.hour}:00`),
-      datasets: [{ label: "Minutes listened", data: hours.map(h => h.minutesListened), backgroundColor: "#3fd68c", borderRadius: 4 }]
+      datasets: [{ label: "Minutes listened", data: hours.map(h => h.minutesListened), backgroundColor: PALETTE.blue, borderRadius: 4 }]
     },
     options: {
       plugins: { legend: { display: false } },
@@ -342,8 +398,6 @@ async function loadHourOfDay() {
     }
   });
 }
-
-const DOUGHNUT_COLORS = ["#1db954", "#1ed760", "#3fd68c", "#7fe0b0", "#b3b3b3", "#535353", "#2a2a2a"];
 
 async function loadPlatforms() {
   const platforms = await getJson(`/api/stats/platforms?${buildRangeQuery()}`);
@@ -408,4 +462,8 @@ loginBtn.addEventListener("click", () => {
 });
 
 // Initial load: see if there's already data in memory, otherwise show the dropzone.
-checkExistingData();
+// Do not auto-load any example or seeded data on first load. The app
+// should remain on the upload screen until the user provides their
+// own Spotify JSON files via drag & drop or the file picker.
+// If you need to re-enable checking server-side uploads, call
+// `checkExistingData()` from a debug console.

@@ -3,148 +3,282 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Audify - Your Spotify Stats</title>
+  <title>Audify — Your Spotify Stats, Unpacked</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/site.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body>
+
   <header class="topbar">
-    <div class="brand">🎧 Audify</div>
-    <button id="loginBtn" class="btn btn-spotify" title="Coming soon">Log in with Spotify</button>
+    <div class="topbar-left">
+      <div class="brand"><span class="brand-mark">🎧</span>Audify</div>
+      <span class="divider"></span>
+      <nav class="topnav">
+        <a href="#features">Why Audify</a>
+        <a href="#upload">Get started</a>
+        <a href="#dashboard-anchor">Dashboard</a>
+      </nav>
+    </div>
+    <div class="topbar-right">
+      <button id="loginBtn" class="btn btn-ghost-pill" title="Coming soon">Log in with Spotify</button>
+      <a href="#upload" class="btn btn-accent-pill">Upload data</a>
+    </div>
   </header>
 
-  <main class="container">
+  <main>
 
-    <!-- Drag & drop upload screen - shown until data is loaded -->
-    <section id="uploadScreen" class="upload-screen">
-      <div id="dropzone" class="dropzone">
-        <div class="dropzone-icon">📂</div>
-        <p class="dropzone-title">Drag & drop your Spotify data here</p>
-        <p class="dropzone-subtitle">
-          Drop the <code>Streaming_History_Audio_*.json</code> / <code>Streaming_History_Video_*.json</code>
-          files from your Spotify data export (or click to browse).
-        </p>
-        <input type="file" id="fileInput" accept=".json" multiple hidden />
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg" aria-hidden="true">
+        <span class="blob blob-a"></span>
+        <span class="blob blob-b"></span>
+        <span class="blob blob-c"></span>
       </div>
-      <p id="uploadStatus" class="upload-status"></p>
+
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow">Local-first · No account required</p>
+          <h1 class="display">Play.<br />Analyze.<br /><span class="accent-text">Obsess.</span></h1>
+          <p class="hero-sub">
+            Audify turns the data export Spotify already owes you into a living dashboard —
+            minutes, streaks, top artists, listening clocks and more. Everything runs from the
+            file you drop in, nothing is sent anywhere else.
+          </p>
+          <div class="hero-actions">
+            <a href="#upload" class="btn btn-accent-pill btn-lg">Upload your data</a>
+            <a href="#features" class="btn btn-outline-pill btn-lg">See what you get</a>
+          </div>
+          <p class="hero-fineprint">Works with <code>Streaming_History_Audio_*.json</code> and <code>Streaming_History_Video_*.json</code> from your Spotify export.</p>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="mock-card">
+            <div class="mock-card-header">
+              <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
+              <span class="mock-card-title">your-year-in-audio.json</span>
+            </div>
+            <div class="mock-bars">
+              <span style="height:38%"></span>
+              <span style="height:64%"></span>
+              <span style="height:48%"></span>
+              <span style="height:82%"></span>
+              <span style="height:56%"></span>
+              <span style="height:94%"></span>
+              <span style="height:70%"></span>
+              <span style="height:44%"></span>
+              <span style="height:76%"></span>
+              <span style="height:60%"></span>
+            </div>
+            <div class="mock-legend">
+              <span><i class="dot purple"></i>Trend</span>
+              <span><i class="dot teal"></i>Habits</span>
+            </div>
+          </div>
+
+          <div class="chip chip-streak">
+            <span class="chip-emoji">🔥</span>
+            <div><strong>42</strong><small>day streak</small></div>
+          </div>
+          <div class="chip chip-minutes">
+            <span class="chip-emoji">⏱️</span>
+            <div><strong>18.4k</strong><small>minutes</small></div>
+          </div>
+          <div class="chip chip-artist">
+            <span class="chip-emoji">🎤</span>
+            <div><strong>Top artist</strong><small>unlocked on upload</small></div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- Dashboard - hidden until data is loaded -->
-    <div id="dashboard" class="hidden">
+    <!-- FEATURE / "BUILD IT WITH" GRID -->
+    <section id="features" class="features">
+      <h2 class="section-title">Everything hiding in your listening history</h2>
+      <div class="feature-grid">
+        <a href="#dashboard-anchor" class="feature-card feature-purple">
+          <span class="feature-icon">📈</span>
+          <h3>Trends over time</h3>
+          <p>Month-by-month minutes, longest streaks and your single most active day, plotted out.</p>
+        </a>
+        <a href="#dashboard-anchor" class="feature-card feature-pink">
+          <span class="feature-icon">🎧</span>
+          <h3>Top artists &amp; tracks</h3>
+          <p>Who you actually played the most — not who Spotify Wrapped decided to highlight.</p>
+        </a>
+        <a href="#dashboard-anchor" class="feature-card feature-teal">
+          <span class="feature-icon">🕒</span>
+          <h3>Habits &amp; rhythms</h3>
+          <p>Day-of-week patterns, your listening clock by hour, skip rate, and average pace per day.</p>
+        </a>
+        <a href="#dashboard-anchor" class="feature-card feature-blue">
+          <span class="feature-icon">📡</span>
+          <h3>Platforms &amp; formats</h3>
+          <p>Desktop vs. mobile vs. speaker, and how music, podcasts and audiobooks split your time.</p>
+        </a>
+      </div>
+      <div class="feature-links">
+        <a href="#upload">Get started <span aria-hidden="true">→</span></a>
+        <a href="#dashboard-anchor">Filter by date range <span aria-hidden="true">→</span></a>
+        <a href="#genres">Genre breakdown <span aria-hidden="true">→</span></a>
+        <a href="#upload">Drag &amp; drop upload <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
 
-      <section class="filter-card">
-        <div class="filter-row filter-row-presets">
-          <button class="preset-btn" data-months="1">Last 4 weeks</button>
-          <button class="preset-btn" data-months="6">Last 6 months</button>
-          <button class="preset-btn" data-months="12">Last 12 months</button>
-          <button class="preset-btn" data-alltime="true">All time</button>
-          <span class="dataset-hint" id="datasetHint"></span>
-        </div>
+    <div class="container">
 
-        <div class="filter-row">
-          <label for="monthsSlider">Or pick exactly: last <span id="monthsValue">6</span> month(s)</label>
-          <input type="range" id="monthsSlider" min="1" max="12" value="6" />
-        </div>
-
-        <div class="filter-row filter-row-custom">
-          <label>Custom range:</label>
-          <input type="date" id="fromDate" />
-          <span>to</span>
-          <input type="date" id="toDate" />
-          <button id="applyCustomRange" class="btn btn-outline">Apply</button>
-          <button id="uploadDifferentBtn" class="btn btn-ghost">Upload different files</button>
-        </div>
-
-        <div class="filter-row">
-          <span class="active-range" id="activeRangeLabel"></span>
-        </div>
-      </section>
-
-      <section class="summary-grid" id="summaryGrid">
-        <div class="summary-card">
-          <div class="summary-value" id="statMinutes">-</div>
-          <div class="summary-label">Minutes listened</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-value" id="statTracks">-</div>
-          <div class="summary-label">Tracks played</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-value" id="statArtists">-</div>
-          <div class="summary-label">Unique artists</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-value" id="statUniqueTracks">-</div>
-          <div class="summary-label">Unique tracks</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-value" id="statSkipRate">-</div>
-          <div class="summary-label">Skip rate</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-value" id="statStreak">-</div>
-          <div class="summary-label">Longest streak (days)</div>
-        </div>
-      </section>
-
-      <section class="chart-card wide-card">
-        <h2>Most active day</h2>
-        <p class="most-active-day" id="mostActiveDay">-</p>
-      </section>
-
-      <section class="charts-grid">
-        <div class="chart-card">
-          <h2>Top Artists</h2>
-          <canvas id="topArtistsChart"></canvas>
-        </div>
-        <div class="chart-card">
-          <h2>Listening Trend</h2>
-          <canvas id="trendChart"></canvas>
-        </div>
-      </section>
-
-      <section class="charts-grid">
-        <div class="chart-card">
-          <h2>Listening by Day of Week</h2>
-          <canvas id="dayOfWeekChart"></canvas>
-        </div>
-        <div class="chart-card">
-          <h2>Listening Clock (hour of day, UTC)</h2>
-          <canvas id="hourOfDayChart"></canvas>
-        </div>
-      </section>
-
-      <section class="charts-grid">
-        <div class="chart-card">
-          <h2>Platforms</h2>
-          <canvas id="platformChart"></canvas>
-        </div>
-        <div class="chart-card">
-          <h2>Music vs Podcasts vs Audiobooks</h2>
-          <canvas id="contentTypeChart"></canvas>
-        </div>
-      </section>
-
-      <section class="lists-grid">
-        <div class="list-card">
-          <h2>Top Tracks</h2>
-          <ol id="topTracksList" class="ranked-list"></ol>
-        </div>
-        <div class="list-card">
-          <h2>Top Albums</h2>
-          <ol id="topAlbumsList" class="ranked-list"></ol>
-        </div>
-        <div class="list-card">
-          <h2>Top Genres</h2>
-          <p class="coming-soon">
-            Coming soon - genres require the Spotify Web API (artist → genre lookup),
-            which will be wired up once Spotify login is implemented.
+      <!-- Drag & drop upload screen - shown until data is loaded -->
+      <section id="upload" class="upload-screen">
+        <p class="section-eyebrow">Step 1</p>
+        <h2 class="section-title">Drop in your data</h2>
+        <div id="dropzone" class="dropzone">
+          <div class="dropzone-icon">📂</div>
+          <p class="dropzone-title">Drag &amp; drop your Spotify data here</p>
+          <p class="dropzone-subtitle">
+            Drop the <code>Streaming_History_Audio_*.json</code> / <code>Streaming_History_Video_*.json</code>
+            files from your Spotify data export — or click to browse.
           </p>
+          <span class="btn btn-outline-pill dropzone-browse">Browse files</span>
+          <input type="file" id="fileInput" accept=".json" multiple hidden />
         </div>
+        <p id="uploadStatus" class="upload-status"></p>
       </section>
 
+      <!-- Dashboard - hidden until data is loaded -->
+      <div id="dashboard" class="hidden">
+        <a id="dashboard-anchor"></a>
+
+        <section class="filter-card">
+          <div class="filter-row filter-row-presets">
+            <button class="preset-btn" data-months="1">Last 4 weeks</button>
+            <button class="preset-btn" data-months="6">Last 6 months</button>
+            <button class="preset-btn" data-months="12">Last 12 months</button>
+            <button class="preset-btn" data-alltime="true">All time</button>
+            <span class="dataset-hint" id="datasetHint"></span>
+          </div>
+
+          <div class="filter-row">
+            <label for="monthsSlider">Or pick exactly: last <span id="monthsValue">6</span> month(s)</label>
+            <input type="range" id="monthsSlider" min="1" max="12" value="6" />
+          </div>
+
+          <div class="filter-row filter-row-custom">
+            <label>Custom range:</label>
+            <input type="date" id="fromDate" />
+            <span>to</span>
+            <input type="date" id="toDate" />
+            <button id="applyCustomRange" class="btn btn-outline-pill btn-sm">Apply</button>
+            <button id="uploadDifferentBtn" class="btn btn-ghost-pill btn-sm">Upload different files</button>
+          </div>
+
+          <div class="filter-row">
+            <span class="active-range" id="activeRangeLabel"></span>
+          </div>
+        </section>
+
+        <section class="summary-grid" id="summaryGrid">
+          <div class="summary-card">
+            <div class="summary-value" id="statMinutes">-</div>
+            <div class="summary-label">Minutes listened</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-value" id="statTracks">-</div>
+            <div class="summary-label">Tracks played</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-value" id="statArtists">-</div>
+            <div class="summary-label">Unique artists</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-value" id="statUniqueTracks">-</div>
+            <div class="summary-label">Unique tracks</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-value" id="statSkipRate">-</div>
+            <div class="summary-label">Skip rate</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-value" id="statStreak">-</div>
+            <div class="summary-label">Longest streak (days)</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-value" id="statAvgPerDay">-</div>
+            <div class="summary-label">Avg. minutes / day</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-value" id="statPeakHour">-</div>
+            <div class="summary-label">Peak listening hour</div>
+          </div>
+        </section>
+
+        <section class="chart-card wide-card accent-top-purple">
+          <h2>Most active day</h2>
+          <p class="most-active-day" id="mostActiveDay">-</p>
+        </section>
+
+        <section class="charts-grid">
+          <div class="chart-card accent-top-pink">
+            <h2>Top Artists</h2>
+            <canvas id="topArtistsChart"></canvas>
+          </div>
+          <div class="chart-card accent-top-purple">
+            <h2>Listening Trend</h2>
+            <canvas id="trendChart"></canvas>
+          </div>
+        </section>
+
+        <section class="charts-grid">
+          <div class="chart-card accent-top-teal">
+            <h2>Listening by Day of Week</h2>
+            <canvas id="dayOfWeekChart"></canvas>
+          </div>
+          <div class="chart-card accent-top-blue">
+            <h2>Listening Clock (hour of day, UTC)</h2>
+            <canvas id="hourOfDayChart"></canvas>
+          </div>
+        </section>
+
+        <section class="charts-grid">
+          <div class="chart-card accent-top-amber">
+            <h2>Platforms</h2>
+            <canvas id="platformChart"></canvas>
+          </div>
+          <div class="chart-card accent-top-green">
+            <h2>Music vs Podcasts vs Audiobooks</h2>
+            <canvas id="contentTypeChart"></canvas>
+          </div>
+        </section>
+
+        <section class="lists-grid" id="genres">
+          <div class="list-card accent-top-pink">
+            <h2>Top Tracks</h2>
+            <ol id="topTracksList" class="ranked-list"></ol>
+          </div>
+          <div class="list-card accent-top-purple">
+            <h2>Top Albums</h2>
+            <ol id="topAlbumsList" class="ranked-list"></ol>
+          </div>
+          <div class="list-card accent-top-teal">
+            <h2>Top Genres</h2>
+            <p class="coming-soon">
+              Coming soon — genres require the Spotify Web API (artist → genre lookup),
+              which will be wired up once Spotify login is implemented.
+            </p>
+          </div>
+        </section>
+
+      </div>
     </div>
   </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="brand"><span class="brand-mark">🎧</span>Audify</div>
+      <p>Built for people who read their own data export instead of waiting for December. Not affiliated with Spotify AB.</p>
+    </div>
+  </footer>
 
   <script src="js/site.js"></script>
 </body>
